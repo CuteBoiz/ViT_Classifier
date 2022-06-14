@@ -247,12 +247,10 @@ def train(args):
                 images = sample_batched['image']
                 targets = sample_batched['target']
                 images = images.to(device=device, dtype=torch.float)
-                targets = targets.to(device=device, dtype=torch.float)
+                targets = targets.to(device=device, dtype=torch.int8)
                 optimizer.zero_grad()
                 output = model(images)
-                loss = criterion(output, targets.long())
-                if loss == 0 or not torch.isfinite(loss):
-                    continue
+                loss = criterion(output, targets)
                 loss.backward()
                 optimizer.step()
                 epoch_loss.append(float(loss))
@@ -281,11 +279,8 @@ def train(args):
                 'num_classes': num_classes,
                 'patch_size': patch_size,
                 'state_dict': model.state_dict(),
-                'optimizer' : optimizer.state_dict(),
-                'num_classes': num_classes},
+                'optimizer' : optimizer.state_dict()},
                 saved_path=weight_save_dir, is_best_loss=is_best_loss, is_best_acc=is_best_acc)
-            is_best_loss = False
-            is_best_acc = False
             last_epoch = epoch
     except KeyboardInterrupt:
         writer.close()
@@ -299,8 +294,6 @@ def train(args):
             'state_dict': model.state_dict(),
             'optimizer' : optimizer.state_dict()},
             saved_path=weight_save_dir, is_best_loss=False, is_best_acc=False)
-    
-
 
 if __name__ == '__main__':
     args = parser_args()
