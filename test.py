@@ -310,7 +310,7 @@ def test(args):
 	model = SimpleViT(
 		image_size = checkpoint['image_size'],
 		channels = checkpoint["in_channels"],
-		patch_size = 32,
+		patch_size = checkpoint['patch_size'],
 		num_classes = checkpoint['num_classes'],
 		dim = 1024,
 		depth = 6,
