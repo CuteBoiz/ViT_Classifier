@@ -32,8 +32,6 @@ def parser_args():
     parser.add_argument('--work-dir', type=str, default=None)
 
     parser.add_argument('--lr', type=float, default=0.001)
-    parser.add_argument('--momentum', type=float, default=0.9) 
-    parser.add_argument('--weight-decay', default=1e-4, type=float)
     parser.add_argument('--device', type=int, default=0)
     parser.add_argument('--workers', type=int, default=4)
     return parser.parse_args()
@@ -215,7 +213,7 @@ def train(args):
 
     # Loss & Optimizer
     criterion = torch.nn.CrossEntropyLoss(weight=cls_weights).to(device=device, dtype=torch.float)
-    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(model.parameters(), args.lr)
     if args.resume:
         optimizer.load_state_dict(checkpoint['optimizer'])
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
